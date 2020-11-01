@@ -1,0 +1,22 @@
+1ro:
+	Relevar datos de descripcion_postulaciones:
+		codigo_categoria: string
+		codigo_agrupacion: int
+		nombre_agrupacion: string
+	Filtrar solo los que sea categoria presidente y vicepresidente
+	Guardar en estructura de datos
+
+2do:
+	Relevar descripcion_regiones:
+		codigo_region: string
+		nombre_region: string
+	
+	
+2 digitos = distrito
+5 digitos = (ultimos 3 dig) seccion electoral 
+11 digitos = (ultimos 6 dig) circuito electoral	
+	
+
+
+
+	
