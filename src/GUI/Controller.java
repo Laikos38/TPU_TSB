@@ -1,9 +1,12 @@
 package GUI;
 
 import Entidades.*;
+import Servicios.ProcesamientoService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -20,12 +23,15 @@ public class Controller {
     public Label lblMensajeCargaDatos;
     @FXML
     public Button btnFiltrar;
+    @FXML
+    private ProgressIndicator progressIndicator;
 
     private ArrayList<Agrupacion> agrupaciones = new ArrayList<>();
     private Pais p = new Pais(agrupaciones);
 
     public void initialize() throws Exception {
         this.habilitarElementosGUI(false);
+        progressIndicator.setVisible(false);
     }
 
     public void btnCargarDatosClick(javafx.event.ActionEvent actionEvent) {
@@ -38,35 +44,56 @@ public class Controller {
 
     private void cargarDatos() {
         Reader reader = new Reader();
-        try {
-            // muestro mensaje de carga
-            lblMensajeCargaDatos.setVisible(true);
-            lblMensajeCargaDatos.setText("Cargando...");
-            // realizo procesamiento de archivos
-            this.agrupaciones = reader.getAgrupacionesFromFile();
-            reader.getRegionesFromFile(agrupaciones, p);
-            reader.getMesasFromFile(agrupaciones, p);
-            // oculto mensaje de carga
-            lblMensajeCargaDatos.setVisible(true);
-            lblMensajeCargaDatos.setText("Archivos cargados y procesados con éxito.");
-        } catch (FileNotFoundException e) {
-            lblMensajeCargaDatos.setVisible(true);
-            lblMensajeCargaDatos.setText("No se pudieron cargar los archivos. Asegúrese de ubicarlos en " +
-                    "el directorio data del proyecto");
-        } catch (Exception e) {
-            lblMensajeCargaDatos.setVisible(true);
-            lblMensajeCargaDatos.setText("Ocurrió un error inesperado.");
-            return;
-        }
+        final ProcesamientoService service = new ProcesamientoService();
 
+        // muestro mensaje de carga
+        lblMensajeCargaDatos.setVisible(true);
+        lblMensajeCargaDatos.setText("Cargando...");
 
-        for(Agrupacion as: agrupaciones) {
-            System.out.println(as.getNombre() + ": " + as.getVotosPantalla());
-        }
+        // realizo procesamiento de archivos
+        progressIndicator.setVisible(true);
+        service.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+                ArrayList<Object> result = service.getValue();
+                agrupaciones = (ArrayList<Agrupacion>) result.get(0);
+                p = (Pais) result.get(1);
 
-        this.cargarCombos();
-        this.crearTabla(agrupaciones);
-        this.habilitarElementosGUI(true);
+                cargarCombos();
+                crearTabla(agrupaciones);
+                habilitarElementosGUI(true);
+
+                // oculto mensaje de carga
+                progressIndicator.setVisible(false);
+                lblMensajeCargaDatos.setVisible(true);
+                lblMensajeCargaDatos.setText("Archivos cargados y procesados con éxito.");
+
+                // muestra resultados por terminal
+                for(Agrupacion as: agrupaciones) {
+                    System.out.println(as.getNombre() + ": " + as.getVotosPantalla());
+                }
+            }
+        });
+
+        service.setOnFailed(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+                String e = service.getException().getMessage();
+                if (e == "Archivo no encontrado.") {
+                    lblMensajeCargaDatos.setVisible(true);
+                    System.out.println("caca1");
+                    lblMensajeCargaDatos.setText("No se pudieron cargar los archivos.\nAsegúrese de ubicarlos en " +
+                            "el directorio data del proyecto");
+                } else {
+                    lblMensajeCargaDatos.setVisible(true);
+                    System.out.println("caca2");
+                    lblMensajeCargaDatos.setText("Ocurrió un error inesperado.");
+                }
+                progressIndicator.setVisible(false);
+            }
+        });
+
+        service.restart();
     }
 
     private void habilitarElementosGUI(boolean set) {
@@ -91,13 +118,13 @@ public class Controller {
 
         cmbDistritos.getItems().add("Todos");
         cmbDistritos.getItems().addAll(obsDistritos);
-        cmbDistritos.getSelectionModel().selectFirst();
+        //cmbDistritos.getSelectionModel().selectFirst();
 
         cmbSecciones.getItems().add("Todos");
-        cmbSecciones.getSelectionModel().selectFirst();
+        //cmbSecciones.getSelectionModel().selectFirst();
 
         cmbCircuitos.getItems().add("Todos");
-        cmbCircuitos.getSelectionModel().selectFirst();
+        //cmbCircuitos.getSelectionModel().selectFirst();
     }
 
     public void cmbDistritosChangeSelection(ActionEvent actionEvent) {
