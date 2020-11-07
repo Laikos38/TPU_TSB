@@ -63,7 +63,4 @@ public class Region {
         return htContadores.get(codAgp).getVotos();
     }
 
-    //String mostrarVotos(){
-    //    return htContadores.toString();
-    //}
 }

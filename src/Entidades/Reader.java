@@ -78,15 +78,6 @@ public class Reader {
             secc.addCircuito(circuito.getCod(), circuito);
         }
 
-        /*
-        Collection<Distrito> d = p.getAllDistricts();
-        int c = 0;
-        for(Distrito dist: d) {
-            c = c + dist.getAllSections().size();
-        }
-        System.out.println("Distritos: " + d.size());
-        System.out.println("Secciones: " + c);
-        */
     }
 
     public void getMesasFromFile(ArrayList<Agrupacion> agrupaciones, Pais p) throws FileNotFoundException {
@@ -126,22 +117,20 @@ public class Reader {
         String codAgp = result[5];
         Integer cantVotos = Integer.parseInt(result[6]);
 
-        //Actualizar contador global
+        //Actualizar contadores
+
         p.actualizarContador(codAgp, cantVotos);
 
-        //Actualizar contador en distrito correspondiente
         Distrito dist = p.getDistrito(codDist);
         dist.actualizarContador(codAgp, cantVotos);
 
-        //Actualizar contador de sección
         Seccion secc = dist.getSeccion(codSec);
         secc.actualizarContador(codAgp, cantVotos);
 
-        //Actualizar contador circuito
         Circuito circ = secc.getCircuito(codCirc);
         circ.actualizarContador(codAgp,cantVotos);
 
-        //Busca la mesa en el circuito correspondiente, si no la encuentra la agrega, y luego actualiza su contador
+        //Busca la mesa en el circuito correspondiente
         Mesa mesa = circ.getMesa(codMesa);
         if (mesa==null) {
             mesa = new Mesa(codMesa, agrupaciones);

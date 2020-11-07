@@ -68,10 +68,6 @@ public class Controller {
                 lblMensajeCargaDatos.setVisible(true);
                 lblMensajeCargaDatos.setText("Archivos cargados y procesados con éxito.");
 
-                // muestra resultados por terminal
-                for(Agrupacion as: agrupaciones) {
-                    System.out.println(as.getNombre() + ": " + as.getVotosPantalla());
-                }
             }
         });
 
@@ -79,14 +75,12 @@ public class Controller {
             @Override
             public void handle(WorkerStateEvent workerStateEvent) {
                 String e = service.getException().getMessage();
-                if (e == "Archivo no encontrado.") {
+                if (e.equals("Archivo no encontrado.")) {
                     lblMensajeCargaDatos.setVisible(true);
-                    System.out.println("caca1");
                     lblMensajeCargaDatos.setText("No se pudieron cargar los archivos.\nAsegúrese de ubicarlos en " +
                             "el directorio data del proyecto");
                 } else {
                     lblMensajeCargaDatos.setVisible(true);
-                    System.out.println("caca2");
                     lblMensajeCargaDatos.setText("Ocurrió un error inesperado.");
                 }
                 progressIndicator.setVisible(false);
@@ -165,12 +159,16 @@ public class Controller {
 
         TableColumn<Agrupacion, String> codeColumn  = new TableColumn<>("Codigo");
         codeColumn.setCellValueFactory(new PropertyValueFactory<Agrupacion, String>("cod"));
+        codeColumn.setStyle( "-fx-alignment: CENTER;");
 
         TableColumn<Agrupacion, String> nameColumn  = new TableColumn<>("Nombre");
         nameColumn.setCellValueFactory(new PropertyValueFactory<Agrupacion, String>("nombre"));
+        nameColumn.setStyle( "-fx-alignment: CENTER;");
 
         TableColumn<Agrupacion, String> votesColumn  = new TableColumn<>("Cantidad");
         votesColumn.setCellValueFactory(new PropertyValueFactory<Agrupacion, String>("votosPantalla"));
+        votesColumn.setStyle( "-fx-alignment: CENTER;");
+        tblVotos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tblVotos.getColumns().addAll(codeColumn, nameColumn, votesColumn);
         tblVotos.getItems().addAll(obsAgrupaciones);
     }

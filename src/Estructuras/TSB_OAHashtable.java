@@ -1144,7 +1144,6 @@ public class TSB_OAHashtable<K,V> implements Map<K,V>, Cloneable, Serializable
             private int current_entry;
             private int next_entry;
 
-            // flag para controlar si remove() está bien invocado...
             private boolean next_ok;
 
             // el valor que debería tener el modCount de la tabla completa...
@@ -1194,7 +1193,6 @@ public class TSB_OAHashtable<K,V> implements Map<K,V>, Cloneable, Serializable
             @Override
             public V next()
             {
-                // control: fail-fast iterator...
                 if (TSB_OAHashtable.this.modCount != expected_modCount) {
                     throw new ConcurrentModificationException("next(): modificación inesperada de tabla...");
                 }
@@ -1235,10 +1233,8 @@ public class TSB_OAHashtable<K,V> implements Map<K,V>, Cloneable, Serializable
                 current_entry = last_entry;
                 next_ok = false;
 
-                // la tabla tiene un elementon menos...
                 TSB_OAHashtable.this.count--;
 
-                // fail_fast iterator: todo en orden...
                 TSB_OAHashtable.this.modCount++;
                 expected_modCount++;
             }

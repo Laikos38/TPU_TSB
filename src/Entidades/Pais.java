@@ -25,10 +25,5 @@ public class Pais extends Region {
         return htDistritos.values();
     }
 
-    // public String mostrarDistritos(){
-    //
-    //     return this.mostrarVotos() + "\n" + htDistritos.toString();
-    //}
-
 
 }
