@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller">
+   <children>
+      <AnchorPane fx:id="tablaVotos" minHeight="800.0" minWidth="600.0" prefHeight="800.0" prefWidth="600.0">
+         <children>
+            <Button fx:id="btnCargarDatos" layoutX="29.0" layoutY="28.0" mnemonicParsing="false" onAction="#btnCargarDatosClick" text="Cargar y procesar datos" />
+            <Separator layoutX="22.0" layoutY="72.0" prefHeight="25.0" prefWidth="557.0" />
+            <Label layoutX="21.0" layoutY="97.0" prefHeight="38.0" prefWidth="100.0" text="Filtros:">
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+            <ComboBox fx:id="cmbDistritos" layoutX="21.0" layoutY="156.0" onAction="#cmbDistritosChangeSelection" prefWidth="150.0" />
+            <ComboBox fx:id="cmbSecciones" layoutX="226.0" layoutY="156.0" onAction="#cmbSeccioneschangeSelection" prefWidth="150.0" />
+            <ComboBox fx:id="cmbCircuitos" layoutX="426.0" layoutY="156.0" prefWidth="150.0" />
+            <Separator layoutX="21.0" layoutY="256.0" prefHeight="14.0" prefWidth="557.0" />
+            <Label layoutX="23.0" layoutY="273.0" text="Resultados:">
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+            <TableView fx:id="tblVotos" layoutX="21.0" layoutY="312.0" prefHeight="473.0" prefWidth="557.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="22.0" AnchorPane.topAnchor="312.0" />
+            <Button fx:id="btnFiltrar" layoutX="503.0" layoutY="215.0" mnemonicParsing="false" onAction="#botonFiltrarClick" prefHeight="25.0" prefWidth="73.0" text="Filtrar" />
+            <Label fx:id="lblMensajeCargaDatos" layoutX="179.0" layoutY="32.0" prefHeight="17.0" prefWidth="397.0" text="Label" visible="false" />
+            <Label layoutX="23.0" layoutY="135.0" text="Distrito:" />
+            <Label layoutX="226.0" layoutY="135.0" text="Sección:" />
+            <Label layoutX="426.0" layoutY="135.0" text="Circuito:" />
+         </children></AnchorPane>
+   </children>
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
+</GridPane>
