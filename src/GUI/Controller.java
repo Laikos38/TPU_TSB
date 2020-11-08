@@ -43,7 +43,6 @@ public class Controller {
     }
 
     private void cargarDatos() {
-        Reader reader = new Reader();
         final ProcesamientoService service = new ProcesamientoService();
 
         // muestro mensaje de carga
@@ -74,8 +73,10 @@ public class Controller {
         service.setOnFailed(new EventHandler<WorkerStateEvent>() {
             @Override
             public void handle(WorkerStateEvent workerStateEvent) {
+
                 String e = service.getException().getMessage();
-                if (e.equals("Archivo no encontrado.")) {
+
+                if (e == "Archivo no encontrado.") {
                     lblMensajeCargaDatos.setVisible(true);
                     lblMensajeCargaDatos.setText("No se pudieron cargar los archivos.\nAsegúrese de ubicarlos en " +
                             "el directorio data del proyecto");
@@ -107,18 +108,16 @@ public class Controller {
     }
 
     private void cargarCombos() {
+
         ObservableList<Distrito> obsDistritos = FXCollections.observableArrayList();
         obsDistritos.addAll(p.getAllDistricts());
 
         cmbDistritos.getItems().add("Todos");
         cmbDistritos.getItems().addAll(obsDistritos);
-        //cmbDistritos.getSelectionModel().selectFirst();
 
         cmbSecciones.getItems().add("Todos");
-        //cmbSecciones.getSelectionModel().selectFirst();
 
         cmbCircuitos.getItems().add("Todos");
-        //cmbCircuitos.getSelectionModel().selectFirst();
     }
 
     public void cmbDistritosChangeSelection(ActionEvent actionEvent) {

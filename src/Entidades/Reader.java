@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 public class Reader {
 
+    //Método que obtiene todas las agrupaciones del archivo.
     public ArrayList<Agrupacion> getAgrupacionesFromFile() throws FileNotFoundException {
         ArrayList<Agrupacion> agrupaciones = new ArrayList<>();
         String fileName = ".\\data\\descripcion_postulaciones.dsv";
@@ -33,13 +34,13 @@ public class Reader {
         return agrupaciones;
     }
 
+
+    //Método que obtiene todas las agrupaciones del archivo.
     public void getRegionesFromFile(ArrayList<Agrupacion> agrupaciones, Pais p) throws FileNotFoundException {
         String fileName = ".\\data\\descripcion_regiones.dsv";
-        ArrayList<String[]> linesDistritos = new ArrayList<String[]>();
-        ArrayList<String[]> linesSecciones = new ArrayList<String[]>();
-        ArrayList<String[]> linesCircuitos = new ArrayList<String[]>();
 
         File file = new File(fileName);
+        //chequear esto
         Scanner scanner = null;
         try {
             scanner = new Scanner(file);
@@ -51,35 +52,32 @@ public class Reader {
             String[] line = scanner.nextLine().split("\\|");
             switch (line[0].length()) {
                 case 2:
-                    Distrito dist = new Distrito(line[0], line[1], agrupaciones);
+                    Distrito dist = p.getDistrito(line[0]);
+
+                    if(dist !=null && dist.getDesc().equals("")){
+                        dist.setDesc(line[1]);
+                        p.addDistrito(dist.getCod(), dist);
+                        break;
+                    }
+                    dist = new Distrito(line[0], line[1], agrupaciones);
                     p.addDistrito(dist.getCod(), dist);
+
                     break;
                 case 5:
-                    linesSecciones.add(line);
+                    agregarSeccion(line[0], line[1], agrupaciones, p);
                     break;
                 case 11:
-                    linesCircuitos.add(line);
+                    agregarCircuito(line[0], line[1], agrupaciones, p);
+                    break;
+                default:
                     break;
             }
         }
 
         scanner.close();
 
-        for(String[] line: linesSecciones) {
-            Distrito dist = p.getDistrito(line[0].substring(0,2));
-            Seccion secc = new Seccion(line[0].substring(0,5), line[1], agrupaciones);
-            dist.addSeccion(secc.getCod(), secc);
-        }
-
-        for(String[] line: linesCircuitos) {
-            Distrito dist = p.getDistrito(line[0].substring(0,2));
-            Seccion secc = dist.getSeccion(line[0].substring(0,5));
-            Circuito circuito = new Circuito(line[0], line[1], agrupaciones);
-            secc.addCircuito(circuito.getCod(), circuito);
-        }
-
     }
-
+    //Método que obtiene las mesas totales del archivo.
     public void getMesasFromFile(ArrayList<Agrupacion> agrupaciones, Pais p) throws FileNotFoundException {
         String fileName = ".\\data\\mesas_totales_agrp_politica.dsv";
 
@@ -103,7 +101,7 @@ public class Reader {
 
         scanner.close();
     }
-
+    //Método que parsea las mesas.
     private void parseMesa(String line, ArrayList<Agrupacion> agrupaciones, Pais p) {
         String[] result = line.split("\\|");
         if (!result[4].equals("000100000000000")){
@@ -139,4 +137,58 @@ public class Reader {
         }
         mesa.actualizarContador(codAgp, cantVotos);
     }
+
+    private void agregarSeccion(String codSec, String descSec, ArrayList<Agrupacion> agps, Pais p) {
+
+        String codDist = codSec.substring(0,2);
+        Seccion secc;
+
+        Distrito dist = p.getDistrito(codDist);
+
+        if (dist != null) {
+            secc = dist.getSeccion(codSec);
+            //Chequea si la sección había sido creada anteriormente con desc vacía, si es así le setea su desc.
+            if (secc!=null && secc.getDesc().equals("")) {
+                secc.setDesc(descSec);
+                dist.addSeccion(secc.getCod(), secc);
+                return;
+            }
+            secc = new Seccion(codSec, descSec, agps);
+            dist.addSeccion(secc.getCod(), secc);
+            return;
+        }
+        dist = new Distrito(codDist, agps);
+        p.addDistrito(dist.getCod(), dist);
+        secc = new Seccion(codSec, descSec, agps);
+        dist.addSeccion(secc.getCod(), secc);
+    }
+
+    private void agregarCircuito(String codCirc, String descCirc, ArrayList<Agrupacion> agps, Pais p) {
+
+        Circuito circ = new Circuito(codCirc, descCirc, agps);
+        String codSec = circ.getCod().substring(0,5);
+        String codDist =  circ.getCod().substring(0,2);
+
+        Seccion seccion;
+        Distrito distrito = p.getDistrito(codDist);
+
+        if(distrito == null) {
+            agregarSeccion(codSec, "", agps, p);
+            distrito = p.getDistrito(codDist);
+            seccion = distrito.getSeccion(codSec);
+            seccion.addCircuito(circ.getCod(), circ);
+        }
+        else {
+            seccion = distrito.getSeccion(codSec);
+            if (seccion == null) {
+                agregarSeccion(codSec, "", agps, p);
+                seccion = distrito.getSeccion(codSec);
+                seccion.addCircuito(circ.getCod(), circ);
+            }
+            else {
+                seccion.addCircuito(circ.getCod(), circ);
+            }
+        }
+    }
 }
+
